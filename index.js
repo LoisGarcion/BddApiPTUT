@@ -1,10 +1,18 @@
+const Pool = require('pg').Pool
+const pool = new Pool({
+    user: 'ptut-adm',
+    host: 'ep-polished-violet-a2o4tams.eu-central-1.pg.koyeb.app',
+    database: 'koyebdb',
+    password: 'zWp1R6fJAnaI',
+    port: 5432,
+    ssl: true
+})
+
 const express = require('express')
 const app = express()
 const PORT = 8080
 
 app.use(express.json())
-
-const mysql = require('mysql');
 
 app.listen(
     PORT,
@@ -12,9 +20,12 @@ app.listen(
     )
 
 app.get("/etablissement/:id",(req, res) => {
-    res.status(200).send({
-        nomEtablissement: "Etab test",
-        numeroEtablissement: req.params['id']
+    const id = req.params.id
+    pool.query('SELECT * FROM ETABLISSEMENT WHERE numeroEtab = $1',[id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        res.status(200).json(results.rows)
     })
 })
 
