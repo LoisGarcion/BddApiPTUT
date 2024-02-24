@@ -19,8 +19,8 @@ app.listen(
     () => {  console.log('Serveur à lécoute')}
     )
 
-app.get("/etablissement/:id",(req, res) => {
-    const id = req.params.id
+app.get("/etablissement/:idEtab",(req, res) => {
+    const id = req.params.idEtab
     pool.query('SELECT * FROM ETABLISSEMENT WHERE numeroEtab = $1',[id], (error, results) => {
         if (error) {
             throw error
@@ -29,59 +29,70 @@ app.get("/etablissement/:id",(req, res) => {
     })
 })
 
-app.get("/etablissement/:id/salle",(req, res) => {
-    res.status(200).send({
-        //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
-        salles: [
-            {
-                nomSalle: "Salle test",
-                numeroSalle: 1,
-                nbPersonne: 10
-            },
-            {
-                nomSalle: "Salle test",
-                numeroSalle: 2,
-                nbPersonne: 5
-            }
-        ]
+app.get("/etablissement/:idEtab/salle",(req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
+    const id = req.params.idEtab
+    pool.query('SELECT * FROM SALLE WHERE numeroEtab = $1',[id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        res.status(200).json(results.rows)
     })
 })
 
-app.get("/etablissement/:id/salle/periode",(req, res) => {
-    const  dateDebut = req.query.dateDebut;
-    const  dateFin = req.query.dateFin;
-
-    res.status(200).send({
-        //On récupère pour chaque passage de notre salle les passages entre la date de début et la date de fin
-        //A voir si on remplace le boolean pour les entrants par des int (1 et -1)
-        salle1: [
-            {
-                date: dateDebut,
-                nbPersonne: 10,
-                entrant: true
-            },
-            {
-                date: "2020-12-01 01:00:00",
-                nbPersonne: 9,
-                entrant: false
-            }
-        ],
-        salle2:[
-            {
-                date: "2020-12-01 00:00:00",
-                nbPersonne: 7,
-                entrant: true
-            },
-            {
-                date: "2020-12-01 00:01:00",
-                nbPersonne: 6,
-                entrant: false
-            }
-        ]
+app.get("/etablissement/:idEtab/passage",(req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
+    const id = req.params.idEtab
+    pool.query('SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE numeroEtab = $1 ORDER BY p.datePassage',[id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        res.status(200).json(results.rows)
     })
 })
 
-app.get("/etablissement/:id/salle/:idSalle",(req, res) => {
+app.get("/etablissement/:idEtab/lastpassage", (req, res) => {
+    const id = req.params.idEtab;
+    pool.query(
+        'SELECT E.nomEtab, S.nomSalle, P.* FROM Etablissement E JOIN Salle S ON E.numeroEtab = S.numeroEtab JOIN ( SELECT numeroSalle, MAX(datePassage) AS lastPassage FROM Passage GROUP BY numeroSalle ) LP ON S.numeroSalle = LP.numeroSalle JOIN Passage P ON LP.numeroSalle = P.numeroSalle AND LP.lastPassage = P.datePassage WHERE E.numeroEtab = $1',
+        [id],
+        (error, results) => {
+            if (error) {
+                throw error;
+            }
+            const adjustedResults = results.rows.map(row => {
+                return {
+                    ...row,
+                    datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+                };
+            });
+            res.status(200).json(adjustedResults);
+        }
+    );
+});
+
+app.get("/etablissement/:idEtab/passage/periode",(req, res) => {
+    const dateDebut = req.query.dateDebut;
+    const dateFin = req.query.dateFin;
+    const id = req.params.idEtab
+
+    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND p.datePassage BETWEEN $2 AND $3',[id,dateDebut,dateFin], (error, results) => {
+        if (error) {
+            throw error
+        }
+
+        // Adjust timestamps to local timezone
+        const adjustedResults = results.rows.map(row => {
+            return {
+                ...row,
+                datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+            };
+        });
+
+        res.status(200).json(adjustedResults);
+    })
+})
+
+
+app.get("/etablissement/:idEtab/salle/:idSalle",(req, res) => {
     res.status(200).send({
         //Ici on récupérera la salle et on ajoutera le nbPersonne du passage le plus récent
         nomSalle: "Salle test",
@@ -90,25 +101,58 @@ app.get("/etablissement/:id/salle/:idSalle",(req, res) => {
     })
 })
 
-app.get("/etablissement/:id/salle/:id/periode",(req, res) => {
-    const  dateDebut = req.query.dateDebut;
-    const  dateFin = req.query.dateFin;
+app.get("/etablissement/:idEtab/salle/:idSalle/passage",(req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
+    const id = req.params.idEtab
+    const idSalle = req.params.idSalle
+    pool.query('SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE s.numeroEtab = $1 AND s.numeroSalle = $2 ORDER BY p.datePassage',[id,idSalle], (error, results) => {
+        if (error) {
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+})
 
-    res.status(200).send({
-        //On récupère pour chaque passage de notre salle les passages entre la date de début et la date de fin
-        //A voir si on remplace le boolean pour les entrants par des int (1 et -1)
-        passages: [
-            {
-                date: dateDebut,
-                nbPersonne: 10,
-                entrant: true
-            },
-            {
-                date: "2020-12-01 01:00:00",
-                nbPersonne: 9,
-                entrant: false
+app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage", (req, res) => {
+    const id = req.params.idEtab;
+    const idSalle = req.params.idSalle;
+    pool.query(
+        'SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE s.numeroEtab = $1 AND s.numeroSalle = $2 ORDER BY p.datePassage DESC LIMIT 1',
+        [id, idSalle],
+        (error, results) => {
+            if (error) {
+                throw error;
             }
-        ],
+            const adjustedResults = results.rows.map(row => {
+                return {
+                    ...row,
+                    datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+                };
+            });
+            res.status(200).json(adjustedResults);
+        }
+    );
+});
+
+app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
+    const dateDebut = req.query.dateDebut;
+    const dateFin = req.query.dateFin;
+    const idEtab = req.params.idEtab;
+    const idSalle = req.params.idSalle;
+
+    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND s.numeroSalle = $2 AND p.datePassage BETWEEN $3 AND $4',[idEtab,idSalle,dateDebut,dateFin], (error, results) => {
+        if (error) {
+            throw error
+        }
+
+        // Adjust timestamps to local timezone
+        const adjustedResults = results.rows.map(row => {
+            return {
+                ...row,
+                datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+            };
+        });
+
+        res.status(200).json(adjustedResults);
     })
 })
 
