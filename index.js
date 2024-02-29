@@ -156,16 +156,18 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
     })
 })
 
-app.post("url:id", (req, res) => {
+app.post('/createpassage', (req, res) => {
+    // Assuming your stored procedure requires some parameters, you can access them from the request body
+    const numeroSalleEntrante = req.body.numeroSalleEntrante!==undefined?req.body.numeroSalleEntrante:null;
+    const numeroSalleSortante = req.body.numeroSalleSortante!==undefined?req.body.numeroSalleSortante:null;
 
-    const { id } = req.params.id
-    const { body } = req.body
-
-    if(!body){
-        res.status(400).send({
-            message: "Le body est vide"
-        })
-    }
-    res.send({
-    })
-})
+    // Call your stored procedure with parameters
+    pool.query('CALL ADD_PASSAGE(?, ?)', [numeroSalleEntrante, numeroSalleSortante], (error, results, fields) => {
+        if (error) {
+            console.error('Error calling stored procedure: ' + error);
+            res.status(500).json({ error: 'Error calling stored procedure' });
+            return;
+        }
+        res.json(results); // Return results from the stored procedure
+    });
+});
