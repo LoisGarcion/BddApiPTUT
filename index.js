@@ -160,9 +160,11 @@ app.post('/createpassage', (req, res) => {
     // Assuming your stored procedure requires some parameters, you can access them from the request body
     const numeroSalleEntrante = req.body.numeroSalleEntrante!==undefined?req.body.numeroSalleEntrante:null;
     const numeroSalleSortante = req.body.numeroSalleSortante!==undefined?req.body.numeroSalleSortante:null;
+    console.log(numeroSalleEntrante);
+    console.log(numeroSalleSortante);
 
     // Call your stored procedure with parameters
-    pool.query('CALL ADD_PASSAGE(?, ?)', [numeroSalleEntrante, numeroSalleSortante], (error, results, fields) => {
+    pool.query('CALL ADD_PASSAGE($1, $2)', [numeroSalleEntrante, numeroSalleSortante], (error, results, fields) => {
         if (error) {
             console.error('Error calling stored procedure: ' + error);
             res.status(500).json({ error: 'Error calling stored procedure' });
