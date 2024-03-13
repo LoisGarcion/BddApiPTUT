@@ -144,17 +144,19 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
             throw error
         }
 
-        // Adjust timestamps to local timezone
+        // Adjust timestamps to desired format
         const adjustedResults = results.rows.map(row => {
+            const datePassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
             return {
                 ...row,
-                datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+                datepassage
             };
         });
 
         res.status(200).json(adjustedResults);
     })
 })
+
 
 app.post('/createpassage', (req, res) => {
     // Assuming your stored procedure requires some parameters, you can access them from the request body
