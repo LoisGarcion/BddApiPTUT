@@ -45,7 +45,15 @@ app.get("/etablissement/:idEtab/passage",(req, res) => {     //Ici on récupére
         if (error) {
             throw error
         }
-        res.status(200).json(results.rows)
+        // Adjust timestamps to desired format
+        const adjustedResults = results.rows.map(row => {
+            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            return {
+                ...row,
+                datepassage
+            };
+        });
+        res.status(200).json(adjustedResults)
     })
 })
 
@@ -58,10 +66,12 @@ app.get("/etablissement/:idEtab/lastpassage", (req, res) => {
             if (error) {
                 throw error;
             }
+            // Adjust timestamps to desired format
             const adjustedResults = results.rows.map(row => {
+                const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
                 return {
                     ...row,
-                    datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+                    datepassage
                 };
             });
             res.status(200).json(adjustedResults);
@@ -79,11 +89,12 @@ app.get("/etablissement/:idEtab/passage/periode",(req, res) => {
             throw error
         }
 
-        // Adjust timestamps to local timezone
+        // Adjust timestamps to desired format
         const adjustedResults = results.rows.map(row => {
+            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
             return {
                 ...row,
-                datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+                datepassage
             };
         });
 
@@ -108,7 +119,15 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage",(req, res) => {     //Ic
         if (error) {
             throw error
         }
-        res.status(200).json(results.rows)
+        // Adjust timestamps to desired format
+        const adjustedResults = results.rows.map(row => {
+            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            return {
+                ...row,
+                datepassage
+            };
+        });
+        res.status(200).json(adjustedResults);
     })
 })
 
@@ -122,10 +141,12 @@ app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage", (req, res) => {
             if (error) {
                 throw error;
             }
+            // Adjust timestamps to desired format
             const adjustedResults = results.rows.map(row => {
+                const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
                 return {
                     ...row,
-                    datepassage: new Date(row.datepassage).toLocaleString("GMT", {timeZone: "Europe/Paris"})
+                    datepassage
                 };
             });
             res.status(200).json(adjustedResults);
@@ -146,7 +167,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
 
         // Adjust timestamps to desired format
         const adjustedResults = results.rows.map(row => {
-            const datePassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
             return {
                 ...row,
                 datepassage
@@ -156,6 +177,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
         res.status(200).json(adjustedResults);
     })
 })
+
 
 
 app.post('/createpassage', (req, res) => {
