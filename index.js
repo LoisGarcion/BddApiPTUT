@@ -47,7 +47,7 @@ app.get("/etablissement/:idEtab/passage",(req, res) => {     //Ici on récupére
         }
         // Adjust timestamps to desired format
         const adjustedResults = results.rows.map(row => {
-            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            const datepassage = new Date(row.datepassage).toLocaleString('en-US', { timeZone: 'Europe/Paris', hour12: false }); // Adjust timezone here
             return {
                 ...row,
                 datepassage
@@ -68,7 +68,7 @@ app.get("/etablissement/:idEtab/lastpassage", (req, res) => {
             }
             // Adjust timestamps to desired format
             const adjustedResults = results.rows.map(row => {
-                const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+                const datepassage = new Date(row.datepassage).toLocaleString('en-US', { timeZone: 'Europe/Paris', hour12: false }); // Adjust timezone here
                 return {
                     ...row,
                     datepassage
@@ -84,14 +84,14 @@ app.get("/etablissement/:idEtab/passage/periode",(req, res) => {
     const dateFin = req.query.dateFin;
     const id = req.params.idEtab
 
-    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND p.datePassage BETWEEN $2 AND $3',[id,dateDebut,dateFin], (error, results) => {
+    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND p.datePassage BETWEEN $2 AND $3 ORDER BY p.datePassage',[id,dateDebut,dateFin], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
 
         // Adjust timestamps to desired format
         const adjustedResults = results.rows.map(row => {
-            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            const datepassage = new Date(row.datepassage).toLocaleString('en-US', { timeZone: 'Europe/Paris', hour12: false }); // Adjust timezone here
             return {
                 ...row,
                 datepassage
@@ -112,24 +112,28 @@ app.get("/etablissement/:idEtab/salle/:idSalle",(req, res) => {
     })
 })
 
-app.get("/etablissement/:idEtab/salle/:idSalle/passage",(req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
-    const id = req.params.idEtab
-    const idSalle = req.params.idSalle
-    pool.query('SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE s.numeroEtab = $1 AND s.numeroSalle = $2 ORDER BY p.datePassage',[id,idSalle], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error: error });
+app.get("/etablissement/:idEtab/salle/:idSalle/passage",(req, res) => {
+    const id = req.params.idEtab;
+    const idSalle = req.params.idSalle;
+    pool.query(
+        'SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE s.numeroEtab = $1 AND s.numeroSalle = $2 ORDER BY p.datePassage',
+        [id, idSalle],
+        (error, results) => {
+            if (error) {
+                return res.status(500).json({ error: error });
+            }
+            // Adjust timestamps to desired timezone format
+            const adjustedResults = results.rows.map(row => {
+                const datepassage = new Date(row.datepassage).toLocaleString('en-US', { timeZone: 'Europe/Paris', hour12: false }); // Adjust timezone here
+                return {
+                    ...row,
+                    datepassage
+                };
+            });
+            res.status(200).json(adjustedResults);
         }
-        // Adjust timestamps to desired format
-        const adjustedResults = results.rows.map(row => {
-            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
-            return {
-                ...row,
-                datepassage
-            };
-        });
-        res.status(200).json(adjustedResults);
-    })
-})
+    );
+});
 
 app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage", (req, res) => {
     const id = req.params.idEtab;
@@ -143,7 +147,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage", (req, res) => {
             }
             // Adjust timestamps to desired format
             const adjustedResults = results.rows.map(row => {
-                const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+                const datepassage = new Date(row.datepassage).toLocaleString('en-US', { timeZone: 'Europe/Paris', hour12: false }); // Adjust timezone here
                 return {
                     ...row,
                     datepassage
@@ -160,14 +164,14 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
     const idEtab = req.params.idEtab;
     const idSalle = req.params.idSalle;
 
-    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND s.numeroSalle = $2 AND p.datePassage BETWEEN $3 AND $4',[idEtab,idSalle,dateDebut,dateFin], (error, results) => {
+    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND s.numeroSalle = $2 AND p.datePassage BETWEEN $3 AND $4 ORDER BY p.datePassage',[idEtab,idSalle,dateDebut,dateFin], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
 
         // Adjust timestamps to desired format
         const adjustedResults = results.rows.map(row => {
-            const datepassage = new Date(row.datepassage).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            const datepassage = new Date(row.datepassage).toLocaleString('en-US', { timeZone: 'Europe/Paris', hour12: false }); // Adjust timezone here
             return {
                 ...row,
                 datepassage
