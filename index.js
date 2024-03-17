@@ -16,32 +16,41 @@ app.use(express.json())
 
 app.listen(
     PORT,
-    () => {  console.log('Serveur à lécoute')}
-    )
+    () => { console.log('Serveur à lécoute') }
+)
 
-app.get("/etablissement/:idEtab",(req, res) => {
+app.get("/etablissement/:idEtab", (req, res) => {
     const id = req.params.idEtab
-    pool.query('SELECT * FROM ETABLISSEMENT WHERE numeroEtab = $1',[id], (error, results) => {
+    pool.query('SELECT * FROM ETABLISSEMENT WHERE numeroEtab = $1', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
+
+        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
         res.status(200).json(results.rows)
     })
 })
 
-app.get("/etablissement/:idEtab/salle",(req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
+app.get("/etablissement/:idEtab/salle", (req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
     const id = req.params.idEtab
-    pool.query('SELECT * FROM SALLE WHERE numeroEtab = $1',[id], (error, results) => {
+    pool.query('SELECT * FROM SALLE WHERE numeroEtab = $1', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
+        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
         res.status(200).json(results.rows)
     })
 })
 
-app.get("/etablissement/:idEtab/passage",(req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
+app.get("/etablissement/:idEtab/passage", (req, res) => {     //Ici on récupérera chaque salle et on ajoutera le nbPersonne du passage le plus récent
     const id = req.params.idEtab
-    pool.query('SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE numeroEtab = $1 ORDER BY p.datePassage',[id], (error, results) => {
+    pool.query('SELECT * FROM PASSAGE p JOIN SALLE s ON s.numeroSalle = p.numeroSalle WHERE numeroEtab = $1 ORDER BY p.datePassage', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
@@ -53,6 +62,10 @@ app.get("/etablissement/:idEtab/passage",(req, res) => {     //Ici on récupére
                 datepassage
             };
         });
+        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
         res.status(200).json(adjustedResults)
     })
 })
@@ -74,17 +87,22 @@ app.get("/etablissement/:idEtab/lastpassage", (req, res) => {
                     datepassage
                 };
             });
+
+            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
             res.status(200).json(adjustedResults);
         }
     );
 });
 
-app.get("/etablissement/:idEtab/passage/periode",(req, res) => {
+app.get("/etablissement/:idEtab/passage/periode", (req, res) => {
     const dateDebut = req.query.dateDebut;
     const dateFin = req.query.dateFin;
     const id = req.params.idEtab
 
-    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND p.datePassage BETWEEN $2 AND $3 ORDER BY p.datePassage',[id,dateDebut,dateFin], (error, results) => {
+    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND p.datePassage BETWEEN $2 AND $3 ORDER BY p.datePassage', [id, dateDebut, dateFin], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
@@ -98,12 +116,16 @@ app.get("/etablissement/:idEtab/passage/periode",(req, res) => {
             };
         });
 
+        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
         res.status(200).json(adjustedResults);
     })
 })
 
 
-app.get("/etablissement/:idEtab/salle/:idSalle",(req, res) => {
+app.get("/etablissement/:idEtab/salle/:idSalle", (req, res) => {
     res.status(200).send({
         //Ici on récupérera la salle et on ajoutera le nbPersonne du passage le plus récent
         nomSalle: "Salle test",
@@ -112,7 +134,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle",(req, res) => {
     })
 })
 
-app.get("/etablissement/:idEtab/salle/:idSalle/passage",(req, res) => {
+app.get("/etablissement/:idEtab/salle/:idSalle/passage", (req, res) => {
     const id = req.params.idEtab;
     const idSalle = req.params.idSalle;
     pool.query(
@@ -130,6 +152,10 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage",(req, res) => {
                     datepassage
                 };
             });
+            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
             res.status(200).json(adjustedResults);
         }
     );
@@ -153,18 +179,22 @@ app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage", (req, res) => {
                     datepassage
                 };
             });
+            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
             res.status(200).json(adjustedResults);
         }
     );
 });
 
-app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
+app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode", (req, res) => {
     const dateDebut = req.query.dateDebut;
     const dateFin = req.query.dateFin;
     const idEtab = req.params.idEtab;
     const idSalle = req.params.idSalle;
 
-    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND s.numeroSalle = $2 AND p.datePassage BETWEEN $3 AND $4 ORDER BY p.datePassage',[idEtab,idSalle,dateDebut,dateFin], (error, results) => {
+    pool.query('SELECT * FROM SALLE s JOIN PASSAGE p ON p.numeroSalle = s.numeroSalle WHERE numeroEtab = $1 AND s.numeroSalle = $2 AND p.datePassage BETWEEN $3 AND $4 ORDER BY p.datePassage', [idEtab, idSalle, dateDebut, dateFin], (error, results) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
@@ -178,6 +208,10 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
             };
         });
 
+        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
         res.status(200).json(adjustedResults);
     })
 })
@@ -186,8 +220,8 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",(req, res) => {
 
 app.post('/createpassage', (req, res) => {
     // Assuming your stored procedure requires some parameters, you can access them from the request body
-    const numeroSalleEntrante = req.body.numeroSalleEntrante!==undefined?req.body.numeroSalleEntrante:null;
-    const numeroSalleSortante = req.body.numeroSalleSortante!==undefined?req.body.numeroSalleSortante:null;
+    const numeroSalleEntrante = req.body.numeroSalleEntrante !== undefined ? req.body.numeroSalleEntrante : null;
+    const numeroSalleSortante = req.body.numeroSalleSortante !== undefined ? req.body.numeroSalleSortante : null;
     console.log(numeroSalleEntrante);
     console.log(numeroSalleSortante);
 
@@ -198,6 +232,10 @@ app.post('/createpassage', (req, res) => {
             res.status(500).json({ error: 'Error calling stored procedure' });
             return;
         }
+        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
         res.json(results); // Return results from the stored procedure
     });
 });
