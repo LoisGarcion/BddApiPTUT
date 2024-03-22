@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 const Pool = require('pg').Pool
 const pool = new Pool({
     user: 'ptut-adm',
@@ -13,6 +15,7 @@ const express = require('express')
 const app = express()
 const PORT = 8080
 
+app.use(cors())
 app.use(express.json())
 
 app.listen(
@@ -116,11 +119,6 @@ app.get("/etablissement/:idEtab/passage/periode", (req, res) => {
                 datepassage
             };
         });
-
-        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
-
         res.status(200).json(adjustedResults);
     })
 })
