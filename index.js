@@ -15,12 +15,7 @@ const express = require('express')
 const app = express()
 const PORT = 8080
 
-// Configurer CORS
-const corsOptions = {
-  origin: 'https://ptut-front-leocorp.koyeb.app/',
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json())
 
 app.listen(
