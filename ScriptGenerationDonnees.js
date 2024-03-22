@@ -49,36 +49,22 @@ function callProcedure(param1, param2, param3){
 
 // Function to generate fake data
 function generateFakeData() {
-    let date = new Date('2024-03-20T18:00:00+01:00');
+    let date = new Date('2024-03-15T08:00:00+01:00');
 
-    for (let i = 0; i < 1000; i++) {
-        let entryRoom = Math.random() < 0.5 ? 1 : 2;
+    for (let i = 0; i < 2000; i++) {
+        // random number between 8 and 14
+        let entryRoom = Math.floor(Math.random() * (14 - 8 + 1)) + 8;
         let enter = Math.random() < 0.46;
-        let both = Math.random() < 0.2;
-        if(both){
-            callProcedure(entryRoom,entryRoom === 1 ? 2 : 1, date);
+        if(enter) {
+            callProcedure(entryRoom, null, date);
             date = new Date(date.getTime() + 1000*60*30);
-            console.log("Insert entrant in : " + entryRoom + " and out in " + (entryRoom === 1 ? 2 : 1) + " at " + date);
         }
-        if(entryRoom === 1) {
-            if(enter) {
-                callProcedure(1, null, date);
-                date = new Date(date.getTime() + 1000*60*30);
-            }
-            else {
-                callProcedure(null, 1, date);
-                date = new Date(date.getTime() + 1000*60*30);
-            }
+        else {
+            callProcedure(null, entryRoom, date);
+            date = new Date(date.getTime() + 1000*60*30);
         }
-        if(entryRoom === 2) {
-            if(enter) {
-                callProcedure(2, null, date);
-                date = new Date(date.getTime() + 1000*60*30);
-            }
-            else {
-                callProcedure(null, 2, date);
-                date = new Date(date.getTime() + 1000*60*30);
-            }
+        if(date.getHours()>= 20){
+            date = new Date(date.getTime() + 1000*60*60*12)
         }
     }
     console.log("Data generated.");
