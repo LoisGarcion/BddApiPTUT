@@ -8,6 +8,7 @@ const pool = new Pool({
     ssl: true
 })
 
+// Express server
 const express = require('express')
 const app = express()
 const PORT = 8080
