@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto')
 const nodemailer = require('nodemailer');
+const cors = require('cors');
+
 
 const secretKey = "2f5c8fd5bdc0757f43f970d88a65b3fbf93d858207c649c6d03eb836a312c718"; //Pas forcément le plus sécurisé, mais le code étant stocké sur le back d'un docker avec aucun entry point extérieur, ca devrait aller
 
@@ -47,7 +49,12 @@ const generatePassword = (
 const express = require('express')
 const app = express()
 const PORT = 8080
+const corsOptions = {
+    origin: 'https://ptut-front-leocorp.koyeb.app',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
+app.use(cors(corsOptions));
 app.use(express.json())
 
 app.listen(
@@ -65,10 +72,6 @@ app.get("/etablissement/:idEtab",verifyToken, (req, res) => {
             return res.status(500).json({ error: error });
         }
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
-
         res.status(200).json(results.rows)
     })
 })
@@ -82,9 +85,6 @@ app.get("/etablissement/:idEtab/salle", verifyToken, (req, res) => {
         if (error) {
             return res.status(500).json({ error: error });
         }
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
         res.status(200).json(results.rows)
     })
@@ -107,9 +107,6 @@ app.get("/etablissement/:idEtab/passage",verifyToken, (req, res) => {
                 datepassage
             };
         });
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
         res.status(200).json(adjustedResults)
     })
@@ -135,10 +132,6 @@ app.get("/etablissement/:idEtab/lastpassage", verifyToken, (req, res) => {
                     datepassage
                 };
             });
-
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
             res.status(200).json(adjustedResults);
         }
@@ -167,10 +160,6 @@ app.get("/etablissement/:idEtab/passage/periode",verifyToken, (req, res) => {
             };
         });
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
-
         res.status(200).json(adjustedResults);
     })
 })
@@ -196,9 +185,6 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage",verifyToken, (req, res) 
                     datepassage
                 };
             });
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
             res.status(200).json(adjustedResults);
         }
@@ -226,9 +212,6 @@ app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage",verifyToken, (req, r
                     datepassage
                 };
             });
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
             res.status(200).json(adjustedResults);
         }
@@ -258,10 +241,6 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode",verifyToken, (re
             };
         });
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
-
         res.status(200).json(adjustedResults);
     })
 })
@@ -280,9 +259,6 @@ app.post('/createpassage', (req, res) => {
             res.status(500).json({ error: 'Error calling stored procedure' });
             return;
         }
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
         res.json(results); // Return results from the stored procedure
     });
@@ -304,9 +280,6 @@ app.post('/user/register', verifyToken,async (req, res) => {
             if (error) {
                 return res.status(500).json({ error: "Erreur de requête : " + error });
             }
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-            res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
             //Envoie un mail avec le mot de passe
             // Configuration de l'e-mail
