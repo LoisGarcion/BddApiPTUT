@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 const Pool = require('pg').Pool
 const pool = new Pool({
     user: 'ptut-adm',
@@ -13,6 +15,12 @@ const express = require('express')
 const app = express()
 const PORT = 8080
 
+// Configurer CORS
+const corsOptions = {
+  origin: 'https://ptut-front-leocorp.koyeb.app/',
+};
+
+app.use(cors(corsOptions));
 app.use(express.json())
 
 app.listen(
