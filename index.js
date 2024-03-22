@@ -1,5 +1,3 @@
-const cors = require('cors');
-
 const Pool = require('pg').Pool
 const pool = new Pool({
     user: 'ptut-adm',
@@ -15,7 +13,6 @@ const express = require('express')
 const app = express()
 const PORT = 8080
 
-app.use(cors());
 app.use(express.json())
 
 app.listen(
@@ -30,7 +27,7 @@ app.get("/etablissement/:idEtab", (req, res) => {
             return res.status(500).json({ error: error });
         }
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -44,7 +41,7 @@ app.get("/etablissement/:idEtab/salle", (req, res) => {     //Ici on récupérer
         if (error) {
             return res.status(500).json({ error: error });
         }
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -66,7 +63,7 @@ app.get("/etablissement/:idEtab/passage", (req, res) => {     //Ici on récupér
                 datepassage
             };
         });
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -92,7 +89,7 @@ app.get("/etablissement/:idEtab/lastpassage", (req, res) => {
                 };
             });
 
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+            res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
             res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
             res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -120,7 +117,7 @@ app.get("/etablissement/:idEtab/passage/periode", (req, res) => {
             };
         });
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -156,7 +153,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage", (req, res) => {
                     datepassage
                 };
             });
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+            res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
             res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
             res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -183,7 +180,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle/lastpassage", (req, res) => {
                     datepassage
                 };
             });
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+            res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
             res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
             res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -212,7 +209,7 @@ app.get("/etablissement/:idEtab/salle/:idSalle/passage/periode", (req, res) => {
             };
         });
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
@@ -236,7 +233,7 @@ app.post('/createpassage', (req, res) => {
             res.status(500).json({ error: 'Error calling stored procedure' });
             return;
         }
-        res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+        res.header('Access-Control-Allow-Origin', 'https://ptut-front-leocorp.koyeb.app/');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
