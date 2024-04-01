@@ -62,6 +62,19 @@ app.listen(
     () => { console.log('Serveur à lécoute') }
 )
 
+app.get("/etablissement",verifyToken, (req, res) => {
+    if(req.role !== 'admin'){
+        return res.status(403).json({ error: "Vous n'avez pas les droits pour effectuer cette action" });
+    }
+    pool.query('SELECT * FROM ETABLISSEMENT', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error });
+        }
+
+        res.status(200).json(results.rows)
+    })
+})
+
 app.get("/etablissement/:idEtab",verifyToken, (req, res) => {
     if(req.role !== "admin" && req.role !== req.params.idEtab){
         return res.status(403).json({ error: "Vous n'avez pas les droits pour effectuer cette action" });
