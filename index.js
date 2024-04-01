@@ -50,7 +50,7 @@ const express = require('express')
 const app = express()
 const PORT = 8080
 const corsOptions = {
-    origin: 'https://ptut-front-leocorp.koyeb.app',
+    origin: ['https://ptut-front-leocorp.koyeb.app', 'http://localhost:8000'],
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
