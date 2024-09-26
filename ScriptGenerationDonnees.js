@@ -55,7 +55,7 @@ async function getNumberOfPeopleLastPassage(numsalle){
     return new Promise((resolve, reject
     ) => {
         pool.query(
-            'SELECT nbpersonne FROM passage WHERE numerosalle = $1 ORDER BY datepassage DESC LIMIT 1',[numsalle],
+            'SELECT nbpersonne FROM passage WHERE numerosalle = $1 ORDER BY numeropassage DESC LIMIT 1',[numsalle],
             (error, results) => {
                 if (error) {
                     console.error('Error calling stored procedure: ' + error);
@@ -70,11 +70,11 @@ async function getNumberOfPeopleLastPassage(numsalle){
 
 // Function to generate fake data
 async function generateFakeData() {
-    let date = new Date('2024-01-01T08:10:00+01:00');
+    let date = new Date('2024-01-01T08:00:00+01:00');
 
     for (let i = 0; i < 30000; i++) {
         // random number between 5 and 15 included
-        let entryRoom = Math.floor(Math.random() * (15 - 5 + 1)) + 5;
+        let entryRoom = 17; //Math.floor(Math.random() * (15 - 5 + 1)) + 5;
         let enter = Math.random() < 0.46;
         if (enter) {
             await callProcedure(entryRoom, null, date);
@@ -83,13 +83,22 @@ async function generateFakeData() {
            await callProcedure(null, entryRoom, date);
             date = new Date(date.getTime() + 1000 * 60 * 5);
         }
-        if (date.getHours() >= 19) {
-            for (let j = 5; j <= 15; j++) {
+        /*if (date.getHours() >= 19) {
+            for (let j = 17; j <= 17; j++) {
                 let nb = await getNumberOfPeopleLastPassage(j);
                 for (let k = 0; k < nb; k++) {
                     await callProcedure(null, j, date);
                     date = new Date(date.getTime() + 1000 * 60);
                 }
+            }
+            date = new Date(date.getTime() + 1000 * 60 * 60 * 12)
+        }
+        */
+        if (date.getHours() >= 19) {
+            let nb = await getNumberOfPeopleLastPassage(17);
+            for (let k = 0; k < nb; k++) {
+                await callProcedure(null, 17, date);
+                date = new Date(date.getTime() + 1000 * 60);
             }
             date = new Date(date.getTime() + 1000 * 60 * 60 * 12)
         }

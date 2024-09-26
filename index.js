@@ -49,6 +49,7 @@ const generatePassword = (
 const express = require('express')
 const app = express()
 const PORT = 8080
+
 const corsOptions = {
     origin: ['https://ptut-front-leocorp.koyeb.app', 'http://localhost:8000'],
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -265,15 +266,18 @@ app.post('/createpassage', (req, res) => {
     const numeroSalleEntrante = req.body.numeroSalleEntrante !== undefined ? req.body.numeroSalleEntrante : null;
     const numeroSalleSortante = req.body.numeroSalleSortante !== undefined ? req.body.numeroSalleSortante : null;
 
+    console.log(numeroSalleEntrante + " " + numeroSalleSortante)
+
     // Call your stored procedure with parameters
     pool.query('CALL ADD_PASSAGE($1, $2)', [numeroSalleEntrante, numeroSalleSortante], (error, results, fields) => {
         if (error) {
             console.error('Error calling stored procedure: ' + error);
+            console.log("je renvoie 500")
             res.status(500).json({ error: 'Error calling stored procedure' });
             return;
         }
-
-        res.json(results); // Return results from the stored procedure
+        console.log("je renvoie 200")
+        res.status(200).json(results); // Return results from the stored procedure
     });
 });
 
